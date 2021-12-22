@@ -15,7 +15,7 @@ int tailleTableau()
     return taille;
 }
 
-void genererVecteur(int tailleVecteur)
+int *genererVecteur(int tailleVecteur)
 {
     srand(time(NULL));
     //declarer le vecteur
@@ -47,8 +47,9 @@ void genererVecteur(int tailleVecteur)
     {
         printf("%d, ", v[j]);
     }
-
-    free(v);
+    printf("\n***************\n");
+    return v;
+    //free(v);
 }
 
 int **genererMatrice(int tailleMatrice)
@@ -263,4 +264,18 @@ int calculeNormeVecteur(int *v)
     {
         return 0;
     }
+}
+
+//calculer l'argument maximale d'un vecteur
+int calculeArgMAx(int *v, int size_V)
+{
+    int max = -1;
+    for (int r = 0; r < size_V; r++)
+    {
+        if (v[r] > max)
+        {
+            max = v[r];
+        }
+    }
+    return max;
 }
