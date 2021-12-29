@@ -1,9 +1,11 @@
+#define MAX 20
+#define MIN 2
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#define MAX 20
-#define MIN 2
+
 
 int tailleTableau()
 {

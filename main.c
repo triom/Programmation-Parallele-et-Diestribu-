@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "header.h"
+#include "functions.h"
 
 int main()
 {
@@ -35,7 +35,7 @@ int main()
     // }
     int *v = genererVecteur(5);
     int max = calculeArgMAx(v, 5);
-    printf("\n%d", max);
+    printf("Max value: %d\n", max);
 
     return 0;
 }
