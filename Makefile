@@ -2,11 +2,11 @@ $(CC) = gcc
 
 all : prog
 
-prog : main.o functions.o 
+prog : main.o  
 	$(CC) -o prog main.o -lm
 
-main.o : main.c
-	$(CC) -o main.o -c main.c 
+main.o : SonwaTriomphante-MagnekouAivi_codeSourcePUISS.c
+	$(CC) -o main.o -c SonwaTriomphante-MagnekouAivi_codeSourcePUISS.c 
 
 Clean : 
 	rm *.o prog
