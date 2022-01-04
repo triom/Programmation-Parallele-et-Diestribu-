@@ -1,4 +1,4 @@
-#define MAX 20
+#define MAX 5
 #define MIN 2
 #define MAXTHREADS 4
 
@@ -13,19 +13,18 @@ int tailleTableau()
     srand(time(NULL));
     //recuperer la taille de la matrice à generer
     taille = (rand() % (MAX - MIN + 1) + MIN);
-    printf("%d\n", taille);
     return taille;
 }
 
-int *genererVecteur(int tailleVecteur)
+float *genererVecteur(int tailleVecteur)
 {
     srand(time(NULL));
     //declarer le vecteur
-    int *v;
+    float *v;
     //declarer l'indice à la valeur 1
     int indiceValAUN = 0;
     //allocation dynamique de la memoire pour le vecteur
-    v = (int *)malloc(tailleVecteur * sizeof(int));
+    v = (float*)malloc(tailleVecteur * sizeof(float));
     //verifier que l'allocationa reussi et remplir le vecteur
     if (v == NULL)
     {
@@ -45,19 +44,22 @@ int *genererVecteur(int tailleVecteur)
         }
     }
 
+    printf("\n***Le vecteur****\n");
+
     for (int j = 0; j < tailleVecteur; j++)
     {
-        printf("%d, ", v[j]);
+        printf("%.2f, ", v[j]);
     }
     printf("\n***************\n");
     return v;
     //free(v);
 }
 
-int **genererMatrice(int tailleMatrice)
+//generer un matrice
+float **genererMatrice(int tailleMatrice)
 {
     //allocation dynamique de la memoire pour la matrice
-    int **A = (int **)malloc(tailleMatrice * sizeof(int *));
+    float **A = (float **)malloc(tailleMatrice * sizeof(float *));
     //verifier que l'allocationa reussi et remplir la matrice
     if (A == NULL)
     {
@@ -68,7 +70,7 @@ int **genererMatrice(int tailleMatrice)
     {
         for (int i = 0; i < tailleMatrice; i++)
         {
-            A[i] = (int *)malloc(tailleMatrice * sizeof(int));
+            A[i] = (float *)malloc(tailleMatrice * sizeof(float));
             if (A[i] == NULL)
             {
                 fprintf(stderr, "erreur d'espace memoire");
@@ -84,18 +86,19 @@ int **genererMatrice(int tailleMatrice)
         {
             for (int j = 0; j < tailleMatrice; j++)
             {
-                A[i][j] = (rand() % MAX);
+                A[i][j] = (rand() % (MAX + 1 - 0) + 0);
             }
         }
     }
 
     // afficher la matrice
+     printf("\n***La matrice****\n");
     for (int i = 0; i < tailleMatrice; i++)
     {
         for (int j = 0; j < tailleMatrice; j++)
         {
             {
-                printf("%d ", A[i][j]);
+                printf("%.2f ", A[i][j]);
             }
         }
         printf("\n");
@@ -104,10 +107,12 @@ int **genererMatrice(int tailleMatrice)
     //free(A);
 }
 
-int **genererMatriceIdentite(int tailleMatrice)
+
+// generer une matrice  d'identité
+float **genererMatriceIdentite(int tailleMatrice)
 {
     //allocation dynamique de la memoire pour la matrice
-    int **I = (int **)malloc(tailleMatrice * sizeof(int *));
+    float **I = (float**)malloc(tailleMatrice * sizeof(float *));
     if (I == NULL)
     {
         fprintf(stderr, "erreur d'espace memoire");
@@ -117,7 +122,7 @@ int **genererMatriceIdentite(int tailleMatrice)
     //allocation dynamique de la memoire pour la  seconde dimension
     for (int i = 0; i < tailleMatrice; i++)
     {
-        I[i] = (int *)malloc(tailleMatrice * sizeof(int));
+        I[i] = (float*)malloc(tailleMatrice * sizeof(float));
         if (I[i] == NULL)
         {
             fprintf(stderr, "erreur d'espace memoire");
@@ -146,7 +151,7 @@ int **genererMatriceIdentite(int tailleMatrice)
     {
         for (int c = 0; c < tailleMatrice; c++)
         {
-            printf("%d ", I[r][c]);
+            printf("%.2f ", I[r][c]);
         }
 
         printf("\n");
@@ -161,33 +166,36 @@ int **genererMatriceIdentite(int tailleMatrice)
     return I;
 }
 
-int *calculeProduitMatriceVecteur(int **A, int *v)
+float *calculeProduitMatriceVecteur(float **A, float *v, int tailleVecteur)
 {
     //le vecteur de sortie
-    int *w;
-    // recuperer la taille du vectuer
-    int tailleVecteur = sizeof(v);
+    float *w;
     //allocation dynamique de la taille du vecteur
-    w = (int *)malloc(tailleVecteur * sizeof(int));
-    if (sizeof(A) == sizeof(v))
+    w = (float *)malloc(tailleVecteur * sizeof(float));
+
+    for (int k = 0; k < tailleVecteur; k++)
     {
-        for (int i = 0; i < tailleVecteur; i++)
+       w[k] = 0.00;
+    }
+
+    for (int i = 0; i < tailleVecteur; i++)
+    {
+        for (int j = 0; j < tailleVecteur; j++)
         {
-            for (int j = 0; j < tailleVecteur; j++)
-            {
-                w[i] = w[i] + (A[i][j] * v[j]);
-            }
+            w[i] =  w[i] + (A[i][j] * v[j]);
         }
-        return w;
     }
-    else
+
+    for (int c = 0; c < tailleVecteur; c++)
     {
-        printf("tailles de vecteur et matrice differentes");
-        exit(0);
+        printf("%.2f ", w[c]);
     }
+     printf("\n");
+    return w;
 }
 
-int **calculerASigmaI(int **A, int **I, int sigma)
+//calculer AsigmaI
+float **calculerASigmaI(float **A, float **I, int sigma)
 {
     int size_I = sizeof(I);
     for (int i = 0; i < size_I; i++)
@@ -201,11 +209,13 @@ int **calculerASigmaI(int **A, int **I, int sigma)
     return A;
 }
 
-int **calculeTranspose(int **A)
+
+//calculer la transposé d'une matrice
+float **calculeTranspose(float **A, int taille_M)
 {
     int tmp = 0;
     //allocation dynamique de la memoire pour la matrice
-    int **B = (int **)malloc(sizeof(A) + 1 * sizeof(int *));
+    float **B = (float **)malloc(taille_M * sizeof(float *));
     if (B == NULL)
     {
         fprintf(stderr, "erreur d'espace memoire");
@@ -213,25 +223,25 @@ int **calculeTranspose(int **A)
     }
 
     //allocation dynamique de la memoire pour la  seconde dimension
-    for (int i = 0; i < sizeof(A) + 1; i++)
+    for (int i = 0; i < taille_M; i++)
     {
-        B[i] = (int *)malloc(sizeof(A) + 1 * sizeof(int));
+        B[i] = (float *)malloc(taille_M* sizeof(float));
         if (B[i] == NULL)
         {
             fprintf(stderr, "erreur d'espace memoire");
             exit(0);
         }
     }
-    if (sizeof(A) <= 0)
+    if (taille_M <= 0)
     {
         fprintf(stderr, "Matrice vide");
         exit(0);
     }
     else
     {
-        for (int i = 0; i < sizeof(A); i++)
+        for (int i = 0; i < taille_M; i++)
         {
-            for (int j = 0; j < sizeof(A); j++)
+            for (int j = 0; j < taille_M; j++)
             {
                 if (i != j)
                 {
@@ -242,21 +252,22 @@ int **calculeTranspose(int **A)
     }
 
     // afficher la transposé de la matrice
-    for (int r = 0; r < sizeof(B) + 1; r++)
+    for (int r = 0; r < taille_M + 1; r++)
     {
-        for (int c = 0; c < sizeof(B) + 1; c++)
+        for (int c = 0; c < taille_M+ 1; c++)
         {
-            printf("%d ", B[r][c]);
+            printf("%.2f ", B[r][c]);
         }
 
         printf("\n");
     }
 }
 
-int calculeNormeVecteur(int *v)
+//calculer la norme du vecteur
+int calculeNormeVecteur(float *v, int taille_V)
 {
     int n, resultat;
-    for (int i = 0; i < sizeof(v); i++)
+    for (int i = 0; i < taille_V; i++)
     {
         n += v[i] * v[i];
         resultat = sqrt(n);
@@ -272,22 +283,24 @@ int calculeNormeVecteur(int *v)
 }
 
 //calculer l'argument maximale d'un vecteur
-int calculeArgMAx(int *v, int size_V)
+float calculeArgMAx(float *v, int size_V)
 {
-    int max = -1;
+    float maxVal = -1.00;
     for (int r = 0; r < size_V; r++)
     {
-        if (v[r] > max)
+        if (v[r] > maxVal)
         {
-            max = v[r];
+            maxVal = v[r];
         }
     }
-    return max;
+    return maxVal;
 }
 
 int main()
 {
     clock_t debut = clock();
+    clock_t fin = clock();
+    double temps_exec;
     #pragma omp parallel num_threads(MAXTHREADS) 
     {
 
@@ -310,24 +323,80 @@ int main()
         //compteur +=1
         //fin tq
         // afficher lamda et le vecteur propre v pour chaque étepa et pour la fin aussi
-        // int taille = tailleTableau();
-        // int **A = genererMatrice(taille);
-        // int *v, *w = genererVecteur(taille);
-        // int lamba, alpha, compteur = 0;
-        // int *tableauValPropre = NULL;
-        // tableauValPropre = malloc(taille * sizeof(int));
-        // while ((alpha - lamba) > 0)
-        // {
-        //     w = calculeProduitMatriceVecteur(A, v);
-        //     alpha = 1;
-        // }
 
-        printf("helllllllllooo\n");
+        //debut main
+
+        int taille = tailleTableau();
+        float **A; 
+        float *v,*w;
+        int lamba = 0;
+        float alpha= 0.00;
+        float *tableauValPropre = NULL;
+        float *vecteurPropre = NULL;
+        int compteur = 10;
+        float norme = 0;
+        printf("\ntaille: %d\n", taille);
+
+        vecteurPropre = malloc(taille * sizeof(float));
+        
+        //initialiser le vecteur a 0
+        for (int k = 0; k < taille; k++)
+        {
+            w[k] = 0.00;
+        }
+
+        //initialiser le vecteur a 0
+        for (int c = 0; c < taille; c++)
+        {
+            vecteurPropre[c] = 0.00;
+        }
+        
+        A = genererMatrice(taille);
+        v = genererVecteur(taille);
+        
+        //commncer les tests
+        do{
+            w = calculeProduitMatriceVecteur(A, v, taille);
+    
+            //afficher le vecteur
+            printf("\nresultant vector\n");
+
+            //for (int j = 0; j < taille; j++)
+            for (int k = 0; k < taille; k++)
+            {
+                printf("%.2f ", w[k]);
+            }
+
+            alpha = calculeArgMAx(w, taille);
+            printf("\nalpha : %.2f\n", alpha);
+
+            lamba = (int)alpha;
+            printf("\nLamda : %d \n", lamba);
+
+            //extraire le vecteur propre
+            for(int i = 0; i < taille;i++)
+            {
+                vecteurPropre[i] = (1/alpha)* w[i];
+                printf("\nvaal : %.2f \n", vecteurPropre[i]);
+            }
+
+            printf("\nvecteur propre\n");
+            for (int r = 0; r < taille; r++)
+            {
+                printf("%.2f, ", vecteurPropre[r]);
+            }
+                printf("\n\nvaleur propre %d\n", (int)lamba);
+
+
+        }while((alpha  - (float)lamba) > 0.001);
+        
+        alpha = 0.00;
+        //compteur -= 1;
+        //faire le doiuble pour garder les vecteurs avec virgule
+        
     }
-    clock_t fin = clock();
-    double temps_exec;
     temps_exec = (double)(fin - debut) / CLOCKS_PER_SEC;
-    printf("temps d'exec: %3f\n", temps_exec);
+    printf("\ntemps d'exec: %.3f\n", temps_exec);
 
     return 0;
 }
