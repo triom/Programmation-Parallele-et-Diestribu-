@@ -1,18 +1,20 @@
 #define MAX 5
 #define MIN 2
 #define MAXTHREADS 4
+#define MAXTVAL 100
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <omp.h>
 
 int tailleTableau()
 {
     int taille;
     srand(time(NULL));
     //recuperer la taille de la matrice à generer
-    taille = (rand() % (MAX - MIN + 1) + MIN);
+    taille = (rand() % (MAXTVAL - MIN + 1) + MIN);
     return taille;
 }
 
@@ -80,14 +82,13 @@ float **genererMatrice(int tailleMatrice)
     }
 
     //construire la matrice
-    #pragma omp parallel for schedule(dynamique, MAXTHREADS)
+    
+    
+    for (int i = 0; i < tailleMatrice; i++)
     {
-        for (int i = 0; i < tailleMatrice; i++)
+        for (int j = 0; j < tailleMatrice; j++)
         {
-            for (int j = 0; j < tailleMatrice; j++)
-            {
-                A[i][j] = (rand() % (MAX + 1 - 0) + 0);
-            }
+            A[i][j] = (rand() % (MAX + 1 - 0) + 0);
         }
     }
 
@@ -301,9 +302,6 @@ int main()
     clock_t debut = clock();
     clock_t fin = clock();
     double temps_exec;
-    #pragma omp parallel num_threads(MAXTHREADS) 
-    {
-
         //definir la suite de vecteur v et w
         //definir la matrice pleine
         //choisir un vecteur tel que la norme,||w1|| = 1
@@ -326,18 +324,19 @@ int main()
 
         //debut main
 
-        int taille = tailleTableau();
+        int taille;
         float **A; 
         float *v,*w;
-        int lamba = 0;
-        float alpha= 0.00;
+        float alpha, lamba = 1.00;
         float *tableauValPropre = NULL;
         float *vecteurPropre = NULL;
-        int compteur = 10;
+        int compteur, step = 0;
         float norme = 0;
+        taille = MAXTVAL;
         printf("\ntaille: %d\n", taille);
 
         vecteurPropre = malloc(taille * sizeof(float));
+        tableauValPropre = malloc(MAXTVAL * sizeof(float));
         
         //initialiser le vecteur a 0
         for (int k = 0; k < taille; k++)
@@ -355,9 +354,9 @@ int main()
         v = genererVecteur(taille);
         
         //commncer les tests
-        do{
+        
+        debut:
             w = calculeProduitMatriceVecteur(A, v, taille);
-    
             //afficher le vecteur
             printf("\nresultant vector\n");
 
@@ -370,14 +369,10 @@ int main()
             alpha = calculeArgMAx(w, taille);
             printf("\nalpha : %.2f\n", alpha);
 
-            lamba = (int)alpha;
-            printf("\nLamda : %d \n", lamba);
-
             //extraire le vecteur propre
             for(int i = 0; i < taille;i++)
             {
                 vecteurPropre[i] = (1/alpha)* w[i];
-                printf("\nvaal : %.2f \n", vecteurPropre[i]);
             }
 
             printf("\nvecteur propre\n");
@@ -385,16 +380,21 @@ int main()
             {
                 printf("%.2f, ", vecteurPropre[r]);
             }
-                printf("\n\nvaleur propre %d\n", (int)lamba);
 
+            v = vecteurPropre;
+            tableauValPropre[step] = alpha;
+        if((alpha  - (float)lamba) > 0.01){
+            lamba = alpha;
+            printf("\n\nvaleur propre %.2f\n\n", lamba);
+            step++;
+            goto debut;
+        }
+        float alphaFinal = calculeArgMAx(tableauValPropre, MAXTVAL);
+        printf("\n\nLa valeur propre maximale: %.2f", alphaFinal);
 
-        }while((alpha  - (float)lamba) > 0.001);
         
-        alpha = 0.00;
         //compteur -= 1;
         //faire le doiuble pour garder les vecteurs avec virgule
-        
-    }
     temps_exec = (double)(fin - debut) / CLOCKS_PER_SEC;
     printf("\ntemps d'exec: %.3f\n", temps_exec);
 
