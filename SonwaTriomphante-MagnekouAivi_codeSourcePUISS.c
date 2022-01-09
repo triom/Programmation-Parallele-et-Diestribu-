@@ -1,7 +1,7 @@
 #define MAX 5
 #define MIN 2
 #define MAXTHREADS 4
-#define MAXTVAL 4
+#define MAXTVAL 100
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -171,11 +171,11 @@ float *calculeProduitMatriceVecteur(float **A, float *v, int tailleVecteur)
     float *w;
     //allocation dynamique de la taille du vecteur
     w = (float *)malloc(tailleVecteur * sizeof(float));
-    
-    #pragma omp parallel num_threads(4)
+    omp_set_num_threads(1);
+    #pragma omp parallel
     {
-        printf("thread num: %d ,num of threads: %d \n\n", omp_get_thread_num(), omp_get_num_threads());
-        #pragma omp for schedule(static)
+        printf("\n\nombre de threas threads: %d : Je suis le thread : %d \n\n", omp_get_num_threads(), omp_get_thread_num());
+        #pragma omp for schedule(static)        
         for (int k = 0; k < tailleVecteur; k++)
         {
             w[k] = 0.00;
@@ -382,7 +382,7 @@ int main()
         //compteur -= 1;
         //faire le doiuble pour garder les vecteurs avec virgule
     end = omp_get_wtime(); 
-    printf("temps d'exec: %.3f seconds\n", end - start);
+    printf("\n\ntemps d'exec: %.3f seconds\n", end - start);
     //calculeProduitMatriceVecteur(A, v, taille);
    
 
