@@ -3,10 +3,10 @@ $(CC) = gcc
 all : prog
 
 prog : main.o  
-	$(CC) -fopenmp -o prog main.o -lm
+	$(CC) -o prog main.o -lm
 
 main.o : SonwaTriomphante-MagnekouAivi_codeSourcePUISS.c
-	$(CC) -o main.o  -c SonwaTriomphante-MagnekouAivi_codeSourcePUISS.c 
+	$(CC) -fopenmp SonwaTriomphante-MagnekouAivi_codeSourcePUISS.c -o main.o 
 
 Clean : 
 	rm *.o prog
